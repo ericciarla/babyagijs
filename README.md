@@ -1,7 +1,8 @@
 # BabyAGI JS (Main Branch)
 
 # Features
-- Supabase Integration (To get document context to help respond tasks in Execution chain)
+- BabyAGI but in JS
+- Built with Langchain and Supabase
 
 # How to use
 - Create a project and run this code in Supabase
