@@ -1,7 +1,7 @@
 # BabyAGI JS (Main Branch)
 
 # Features
-- BabyAGI but in JS
+- BabyAGI but in JS (Python version: https://github.com/yoheinakajima/babyagi)
 - Built with Langchain and Supabase
 
 # How to use
