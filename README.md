@@ -1,9 +1,10 @@
 # BabyAGI JS (Main Branch)
 
-The system uses OpenAI and Supabase APIs to create, prioritize, and execute tasks.
 
-# Features
+
+# Overview
 - BabyAGI but in JS (Python version: https://github.com/yoheinakajima/babyagi)
+- The system uses OpenAI and Supabase APIs to create, prioritize, and execute tasks.
 - Built with Langchain and Supabase
 
 # How to use
