@@ -1,4 +1,4 @@
-# BabyAGI JS (Main Branch)
+# BabyAGI JS (QA Branch)
 
 # Features
 - Supabase Integration (To get document context to help respond tasks in Execution chain)
@@ -17,30 +17,29 @@ create table documents (
   embedding vector(1536) -- 1536 works for OpenAI embeddings, change if needed
 );
 
--- Create a function to search for documents
-create function match_documents (
-  query_embedding vector(1536),
-  match_count int
-) returns table (
-  id bigint,
-  content text,
-  metadata jsonb,
-  similarity float
+-- Create search function
+CREATE OR REPLACE FUNCTION match_documents(
+  table_name text,
+  query_embedding double precision[],
+  similarity_threshold double precision,
+  match_count integer
 )
-language plpgsql
-as $$
-#variable_conflict use_column
-begin
-  return query
-  select
-    id,
-    content,
-    metadata,
-    1 - (documents.embedding <=> query_embedding) as similarity
-  from documents
-  order by documents.embedding <=> query_embedding
-  limit match_count;
-end;
+RETURNS TABLE (
+  content text,
+  similarity double precision
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  query_string text;
+BEGIN
+  query_string := 'SELECT content, 1 - (embedding <=> ' || quote_literal(query_embedding) || ') AS similarity
+                   FROM ' || table_name || '
+                   WHERE 1 - (embedding <=> ' || quote_literal(query_embedding) || ') > ' || quote_literal(similarity_threshold) || '
+                   ORDER BY embedding <=> ' || quote_literal(query_embedding) || '
+                   LIMIT ' || match_count || ';';
+  RETURN QUERY EXECUTE query_string;
+END;
 $$;
 
 -- Create an index to be used by the search function
