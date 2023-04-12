@@ -1,7 +1,10 @@
 # BabyAGI JS (QA Branch)
 
-# Features
-- Supabase Integration (To get document context to help respond tasks in Execution chain)
+# Overview
+- BabyAGI but in JS (Python version: https://github.com/yoheinakajima/babyagi)
+- The system uses OpenAI and Supabase APIs to create, prioritize, and execute tasks.
+- (QA Branch) Add documents to execution prompt context via Supabase embedding search for QA applications
+- Built with Langchain and Supabase
 
 # How to use
 - Create a project and run this code in Supabase
