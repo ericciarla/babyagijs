@@ -1,0 +1,51 @@
+{
+  "name": "langchain-ts-starter",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --declaration --outDir dist/",
+    "start": "tsx -r dotenv/config src/index.ts",
+    "start:dist": "yarn build && node -r dotenv/config dist/index.js",
+    "lint": "eslint src",
+    "lint:fix": "npm run lint --fix",
+    "format": "prettier --write \"**/*.ts\"",
+    "format:check": "prettier --list-different \"**/*.ts\""
+  },
+  "keywords": [
+    "langchain",
+    "starter",
+    "template",
+    "node",
+    "typescript",
+    "llm"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@datastructures-js/deque": "^1.0.4",
+    "@supabase/supabase-js": "^2.17.0",
+    "dotenv": "^16.0.3",
+    "langchain": "^0.0.39",
+    "supabase": "^1.50.2"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.2",
+    "@types/js-yaml": "^4",
+    "@types/node": "^18.15.5",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.33.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.3",
+    "tsx": "^3.12.3",
+    "typescript": "^4.9.5"
+  }
+}
