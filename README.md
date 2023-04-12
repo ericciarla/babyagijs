@@ -51,6 +51,10 @@ create index on documents
 - Add and embed documents with context with your objective
 - Clone this repository
 - `npm install`
-- Write your code in `src`
-- `turbo run build lint check` to run build scripts quickly in parallel
+- Make this your .env
+```
+SUPABASE_URL=
+SUPABASE_SERVICE_TOKEN=
+OPENAI_API_KEY=
+```
 - `npm start` to run your program
