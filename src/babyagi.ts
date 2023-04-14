@@ -1,24 +1,23 @@
 import * as dotenv from 'dotenv';
 import { LLMChain, PromptTemplate } from "langchain";
-import { BaseLLM } from "langchain/llms";
-import { SupabaseVectorStore } from "langchain/vectorstores";
+import { BaseChatModel } from "langchain/chat_models";
 
 
 dotenv.config();
 
 
 class TaskCreationChain extends LLMChain {
-    constructor(prompt: PromptTemplate, llm: BaseLLM) {
+    constructor(prompt: PromptTemplate, llm: BaseChatModel) {
         super({prompt, llm});
     }
 
-    static from_llm(llm: BaseLLM): LLMChain {
+    static from_llm(llm: BaseChatModel): LLMChain {
         const taskCreationTemplate: string =
             "You are a task creation AI that uses the result of an execution agent" +
             " to create new tasks with the following objective: {objective}," +
             " The last completed task has the result: {result}." +
             " This result was based on this task description: {task_description}." +
-            " These are incomplete tasks: {incomplete_tasks}." +
+            " These are incomplete tasks list: {incomplete_tasks}." +
             " Based on the result, create new tasks to be completed" +
             " by the AI system that do not overlap with incomplete tasks." +
             " Return the tasks as an array.";
@@ -34,14 +33,14 @@ class TaskCreationChain extends LLMChain {
 
 
 class TaskPrioritizationChain extends LLMChain {
-    constructor(prompt: PromptTemplate, llm: BaseLLM) {
+    constructor(prompt: PromptTemplate, llm: BaseChatModel) {
         super({ prompt, llm});
     }
 
-    static from_llm(llm: BaseLLM): TaskPrioritizationChain {
+    static from_llm(llm: BaseChatModel): TaskPrioritizationChain {
         const taskPrioritizationTemplate: string = (
             "You are a task prioritization AI tasked with cleaning the formatting of and reprioritizing" +
-            " the following tasks: {task_names}." +
+            " the following task list: {task_names}." +
             " Consider the ultimate objective of your team: {objective}." +
             " Do not remove any tasks. Return the result as a numbered list, like:" +
             " #. First task" +
@@ -57,16 +56,16 @@ class TaskPrioritizationChain extends LLMChain {
 }
 
 class ExecutionChain extends LLMChain {
-  constructor(prompt: PromptTemplate, llm: BaseLLM) {
+  constructor(prompt: PromptTemplate, llm: BaseChatModel) {
       super({prompt, llm});
   }
 
-  static from_llm(llm: BaseLLM): LLMChain {
+  static from_llm(llm: BaseChatModel): LLMChain {
       const executionTemplate: string =
           "You are an AI who performs one task based on the following objective: {objective}." +
-          " Take into account these previously completed tasks: {context}." +
+          " Take into account these previously completed task list: {context}." +
           " Your task: {task}." +
-          " Response:";
+          " Respond with how you would complete this task:";
 
       const prompt = new PromptTemplate({
           template: executionTemplate,
@@ -133,28 +132,6 @@ async function prioritizeTasks(
     return prioritizedTaskList;
 }
 
-async function getDocContext(vectorStore: SupabaseVectorStore, query: string, k: number): Promise<string> {
-  const results = await vectorStore.similaritySearchWithScore(query, k);
-  if (!results || results.length === 0) {
-      return '';
-  }
-  console.log(query);
-  const sortedResults = results
-      .sort((a, b) => b[1] - a[1])
-      .map(item => {
-          const document: any = item[0]; // Changed to any to avoid the error
-          const {task} = document.metadata;
-          return task; // Return the task instead of the document
-      });
-  const joinedTasks = sortedResults.join(', '); // Join the tasks with a comma and space
-  return joinedTasks;
-}
-
-
-
-
-
-
 async function executeTask(
     executionChain: LLMChain,
     objective: string,
@@ -168,9 +145,6 @@ async function executeTask(
   return executionChain.predict({objective,context,task});
 }
 
-
-
-
 export class BabyAGI {
   taskList: Array<Task> = [];
 
@@ -182,15 +156,13 @@ export class BabyAGI {
 
   taskIdCounter = 1;
 
-  vectorStore: SupabaseVectorStore;
-
   maxIterations = 3;
 
-  constructor(taskCreationChain: TaskCreationChain, taskPrioritizationChain: TaskPrioritizationChain, executionChain: ExecutionChain, vectorStore: SupabaseVectorStore) {
+  constructor(taskCreationChain: TaskCreationChain, taskPrioritizationChain: TaskPrioritizationChain, executionChain: ExecutionChain, ) {
       this.taskCreationChain = taskCreationChain;
       this.taskPrioritizationChain = taskPrioritizationChain;
       this.executionChain = executionChain;
-      this.vectorStore = vectorStore;
+     
   }
 
   addTask(task: Task) {
@@ -243,7 +215,7 @@ export class BabyAGI {
                   task: task.task_name
                 },
               };
-              this.vectorStore.addDocuments([document]);
+              
 
               // Not Good
               const newTasks = await getNextTask(this.taskCreationChain, result, task.task_name, this.taskList.map(t => t.task_name), objective);
@@ -274,11 +246,11 @@ export class BabyAGI {
       return {};
   }
 
-  static fromLLM(llm: BaseLLM, vectorStore: SupabaseVectorStore): BabyAGI {
+  static fromLLM(llm: BaseChatModel): BabyAGI {
     const taskCreationChain = TaskCreationChain.from_llm(llm);
     const taskPrioritizationChain = TaskPrioritizationChain.from_llm(llm);
     const executionChain = ExecutionChain.from_llm(llm);
-    return new BabyAGI(taskCreationChain, taskPrioritizationChain, executionChain, vectorStore);
+    return new BabyAGI(taskCreationChain, taskPrioritizationChain, executionChain);
     }
 }
 
