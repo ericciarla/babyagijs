@@ -1,6 +1,6 @@
 # BabyAGI JS
 
-BabyAGI JS is a JavaScript-based AI agent that creates, prioritizes, and executes tasks using the GPT-4 architecture. It integrates with OpenAI's language model to create a powerful AI that can handle a wide range of tasks.
+BabyAGI JS is a JavaScript-based AI agent that creates, prioritizes, and executes tasks using the GPT 3.5 or GPT 4 architecture. It integrates with OpenAI's language model to create a powerful AI that can handle a wide range of tasks.
 
 ## Features
 
@@ -11,9 +11,13 @@ BabyAGI JS is a JavaScript-based AI agent that creates, prioritizes, and execute
 ## How to use
 
 1. Clone this repository.
-2. Install the required dependencies using `npm install`.
-3. Write your code in the `src` directory.
-4. Run your program with `npm run start`.
+2. Add API keys to your .env
+```
+OPENAI_API_KEY=
+```
+3. Install the required dependencies using `npm install`.
+4. Write your code in the `src` directory.
+5. Run your program with `npm run start`.
 
 ## Main Files
 
